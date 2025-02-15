@@ -1,0 +1,125 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+#container{
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 2fr  3fr;
+}
+
+#info-lable{
+    /* background-image: linear-gradient(to top right, green, lightgreen); */
+    background-color: black;
+    color: white;
+    gap: 30px;
+    justify-content: center;
+    
+}
+#signup-btn{
+    border: 2px solid white;
+    padding: 10px 25px;
+    border-radius: 15px;
+    background-color: white;
+}
+
+#signup-btn > a{
+    text-decoration: none;
+    color: black;
+    font-size: 15px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+}
+
+
+.container-control{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#signin-container{
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    gap: 5px;
+    /* margin-top: 15px; */
+}
+input[type]{
+    /* padding: 12px 5px; */
+    border-radius: 10px;
+    /* border: 2px solid grey;  */
+    padding: 12px 20px;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border: 3px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+input[type]:focus{
+    border: 3px solid blue;
+}
+
+button{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 15px;
+    font-size: 15px;
+    border: 0;
+    font-weight: bold;
+    background-color: black;
+    color: white;
+}
+
+button:hover{
+   
+}
+
+hr{
+    display: inline;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px 0;
+  }
+  .divider::before,
+  .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+    margin-top: 0 10px;
+  }
+  .divider span {
+    font-size: 14px;
+    color: #666;
+  }
+
+i{
+    font-size: 25px;
+    text-align: center;
+    color: black;
+}
+
