@@ -1,0 +1,3 @@
+CREATE TABLE user_data(
+    id SERIAL PRIMARY KEY
+)
