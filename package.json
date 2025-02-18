@@ -2,7 +2,7 @@
   "name": "authen",
   "version": "1.0.0",
   "description": "This web app allows users to register or log in using their email or third-party accounts like Google and GitHub for a seamless authentication experience.",
-  "main": "index.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
