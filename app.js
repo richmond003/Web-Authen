@@ -6,7 +6,7 @@ import { Strategy }  from "passport-local";
 import session from "express-session";
 import env from "dotenv";
 import bcrypt from "bcrypt";
-// import GoogleStrategy from "passport-google-oauth2";
+import GoogleStrategy from "passport-google-oauth2";
 env.config();
 
 const app = express();
@@ -62,24 +62,52 @@ async function addUser(email, password, fname, lname){
 
 // GET Methods
 app.get('/', (req, res)=>{
-    res.render('sign_up.ejs');
+    res.render('login.ejs');
 });
 
 // app.get('/register', (req, res)=>{
 //     res.render('sign_up.ejs');
 // });
 
-app.get('/login', (req, res)=>{
+app.get('/sign-in', (req, res)=>{
     res.render('login.ejs');
 });
 
-app.get('/landing', (req,res)=>{
+app.get('/register', (req, res)=>{
+    if (req.isAuthenticated()){
+        res.render("landing.ejs")
+    }else{
+        res.render('sign_up.ejs')
+    }
+})
+
+app.get('/landing_page', (req,res)=>{
     if(req.isAuthenticated()){
         res.render('landing.ejs');
     }else{
-        res.redirect('/');
+        res.redirect('/sigh-in');
     }
 });
+
+app.get('/auth/google', passport.authenticate('google', {scope: 
+    ['profile', 'email']
+}));
+
+app.get('/auth/google/authen', passport.authenticate('google', {
+    successRedirect: '/landing',
+    failureRedirect: '/register'
+}));
+
+/* 
+app.get("/auth/google", passport.authenticate("google",{
+    scope: ["profile", "email"]
+}));
+
+app.get("/auth/google/secrets", passport.authenticate("google",{
+    successRedirect: "/secrets",
+    failureRedirect: "/login"
+}));
+*/
 
 //POST Methods 
 app.post('/sign_up', async (req, res)=>{
@@ -110,16 +138,16 @@ app.post('/sign_up', async (req, res)=>{
     }
 });
 
-app.post('/authen', passport.authenticate('local',{
+app.post('/login/authen', passport.authenticate('local',{
    successRedirect: '/landing',
-   failureRedirect: '/login'
+   failureRedirect: '/'
 }));
 
 // app.post('/login', (req, res)=>{
 //     console.log(req.body)
 // })
 
-//Registering local strategy
+//Registering local strategy for clients
 passport.use('local', new Strategy(async function verify(email, password, cb){
     console.log(email);
     console.log(password);
@@ -145,6 +173,28 @@ passport.use('local', new Strategy(async function verify(email, password, cb){
         console.error(err)
     }
 }));
+
+//Registering Google Strategyn for google users
+passport.use('google', new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENTID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:7000/auth/google/authen",
+    userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
+}, async function(accessToken, refreshToken, profile, done){
+    console.log(profile)
+    const {email, id, given_name, family_name} = profile;
+    try{
+        const user = await getUser(email);
+        if(user.length === 0){
+            const newUser = addUser(email, ("Google "+id), given_name, family_name);
+            done(null, newUser[0])
+        }else{
+
+        }
+    }catch(err){
+        console.error(err.message)
+    }
+}))
 
 passport.serializeUser(function(user, cb){
     cb(null, user);

@@ -18,20 +18,37 @@
 
 #info-lable{
     /* background-image: linear-gradient(to top right, green, lightgreen); */
+    display: flex;
     background-color: black;
     color: white;
     gap: 30px;
     justify-content: center;
-    
+    align-items: center;
 }
-#signup-btn{
+
+#signup-container{
     border: 2px solid white;
     padding: 10px 25px;
     border-radius: 15px;
     background-color: white;
 }
 
-#signup-btn > a{
+#signup-container > a{
+    text-decoration: none;
+    color: black;
+    font-size: 15px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+#login-container{
+    border: 2px solid white;
+    padding: 10px 25px;
+    border-radius: 15px;
+    background-color: white;
+}
+
+#login-container > a{
     text-decoration: none;
     color: black;
     font-size: 15px;

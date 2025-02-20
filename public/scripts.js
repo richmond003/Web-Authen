@@ -1,5 +1,5 @@
 // const $ = document.querySelector.bind(document);
-const sectionBtn = document.getElementById('btn');
+const sectionBtn = document.getElementById('btn-grid');
 console.log(sectionBtn)
 // sectionBtn.addEventListener('click', (e)=>{
     
