@@ -36,6 +36,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 async function getUser(email){
+    email = email.trim();
     const query = `
     SELECT * FROM logins 
     WHERE email = $1`;
@@ -53,14 +54,13 @@ async function addUser(email, password, fname, lname){
     VALUES ($1, $2, $3)
     `;
     const login_response = await db.query(login_query, [email, password]);
-    //console.log(login_response.rows);
     const user_id = login_response.rows[0].id;
-    //console.log(user_id);
-    const client_response = await db.query(client_query, [fname, lname, user_id])
+    await db.query(client_query, [fname, lname, user_id])
     return login_response.rows;
 }
 
-// GET Methods
+
+// GET route
 app.get('/', (req, res)=>{
     res.render('login.ejs');
 });
@@ -69,7 +69,7 @@ app.get('/', (req, res)=>{
 //     res.render('sign_up.ejs');
 // });
 
-app.get('/sign-in', (req, res)=>{
+app.get('/login', (req, res)=>{
     res.render('login.ejs');
 });
 
@@ -81,11 +81,11 @@ app.get('/register', (req, res)=>{
     }
 })
 
-app.get('/landing_page', (req,res)=>{
+app.get('/main', (req,res)=>{
     if(req.isAuthenticated()){
         res.render('landing.ejs');
     }else{
-        res.redirect('/sigh-in');
+        res.redirect('/');
     }
 });
 
@@ -94,24 +94,14 @@ app.get('/auth/google', passport.authenticate('google', {scope:
 }));
 
 app.get('/auth/google/authen', passport.authenticate('google', {
-    successRedirect: '/landing',
+    successRedirect: '/main',
     failureRedirect: '/register'
 }));
 
-/* 
-app.get("/auth/google", passport.authenticate("google",{
-    scope: ["profile", "email"]
-}));
-
-app.get("/auth/google/secrets", passport.authenticate("google",{
-    successRedirect: "/secrets",
-    failureRedirect: "/login"
-}));
-*/
 
 //POST Methods 
 app.post('/sign_up', async (req, res)=>{
-    const {fname, lname, email, password, verpassword} = req.body;
+    const {fname, lname, email, password} = req.body;
     console.log(req.body)
     try{
         const user = await getUser(email);
@@ -120,15 +110,16 @@ app.post('/sign_up', async (req, res)=>{
             res.redirect('/')
         }else{
             
-            bcrypt.hash(password, 10, async (err, hash)=>{
+            bcrypt.hash(password.trim(), 10, async (err, hash)=>{
                 if(err){
                     console.error(err)
                 }else{
-                    console.log(hash)
                     const newUser = await addUser(email, hash, fname, lname);
                     req.login(newUser[0], (err)=>{
-                        console.log(err);
-                        res.redirect('/landing')
+                        if(err){
+                            console.log(err);
+                        }
+                        res.redirect('/main')
                     })
                 }
             })
@@ -136,16 +127,13 @@ app.post('/sign_up', async (req, res)=>{
     }catch(err){
         console.error(err.message)
     }
+    
 });
 
 app.post('/login/authen', passport.authenticate('local',{
-   successRedirect: '/landing',
+   successRedirect: '/landing_page',
    failureRedirect: '/'
 }));
-
-// app.post('/login', (req, res)=>{
-//     console.log(req.body)
-// })
 
 //Registering local strategy for clients
 passport.use('local', new Strategy(async function verify(email, password, cb){
@@ -186,15 +174,15 @@ passport.use('google', new GoogleStrategy({
     try{
         const user = await getUser(email);
         if(user.length === 0){
-            const newUser = addUser(email, ("Google "+id), given_name, family_name);
-            done(null, newUser[0])
+            const newUser = addUser(email, ("Google: "+id), given_name, family_name);
+            done(null, newUser[0]);
         }else{
-
+            done(null, user[0]);
         }
     }catch(err){
         console.error(err.message)
     }
-}))
+}));
 
 passport.serializeUser(function(user, cb){
     cb(null, user);
@@ -202,6 +190,11 @@ passport.serializeUser(function(user, cb){
 
 passport.deserializeUser(function(user,cb){
     cb(null, user);
+});
+
+//send a 404 page when the url is not defined route method
+app.all("*", (req, res)=>{
+    res.render("404.ejs");
 });
 
 app.listen(port, ()=>{

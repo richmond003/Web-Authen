@@ -102,6 +102,15 @@ input[type]:focus{
     border: 3px solid black;
 }
 
+.mixmatch-password[type]{
+    border: 3px solid red;
+}
+
+#noMatch{
+    margin: 0px;
+}
+
+
 button{
     margin-top: 15px;
     margin-bottom: 15px;
