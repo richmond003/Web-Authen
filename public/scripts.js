@@ -18,12 +18,11 @@ form.addEventListener("submit", e =>{
     console.log(verPassword);
 
     if (password.value.trim() === verPassword.value.trim()){
-        console.log("send over");
         verPassword.removeAttribute("class", "mixmatch-password")
     }else{
         console.log("prevent send over");
         verPassword.setAttribute("class", "mixmatch-password");
-        mixmatch.innerHTML += "<p>Password didn't match</p>"
+        mixmatch.innerHTML += "<p id='no-match'>Password didn't match</p>"
         e.preventDefault();
     }
 })

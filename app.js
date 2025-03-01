@@ -45,6 +45,10 @@ async function getUser(email){
 }
 
 async function addUser(email, password, fname, lname){
+    email = email.trim();
+    password = password.trim();
+    fname = fname.trim();
+    lname = lname.trim();
     const login_query = `
     INSERT INTO logins (email, password)
     VALUES ($1, $2) RETURNING *`;
@@ -65,10 +69,6 @@ app.get('/', (req, res)=>{
     res.render('login.ejs');
 });
 
-// app.get('/register', (req, res)=>{
-//     res.render('sign_up.ejs');
-// });
-
 app.get('/login', (req, res)=>{
     res.render('login.ejs');
 });
@@ -82,11 +82,12 @@ app.get('/register', (req, res)=>{
 })
 
 app.get('/main', (req,res)=>{
-    if(req.isAuthenticated()){
-        res.render('landing.ejs');
-    }else{
-        res.redirect('/');
-    }
+    // if(req.isAuthenticated()){
+    //     res.render('landing.ejs');
+    // }else{
+    //     res.redirect('/');
+    // }
+    res.render("landing.ejs");
 });
 
 app.get('/auth/google', passport.authenticate('google', {scope: 
@@ -109,7 +110,6 @@ app.post('/sign_up', async (req, res)=>{
         if(user.length > 0){
             res.redirect('/')
         }else{
-            
             bcrypt.hash(password.trim(), 10, async (err, hash)=>{
                 if(err){
                     console.error(err)
@@ -130,12 +130,47 @@ app.post('/sign_up', async (req, res)=>{
     
 });
 
-app.post('/login/authen', passport.authenticate('local',{
-   successRedirect: '/landing_page',
-   failureRedirect: '/'
-}));
+// app.post('/login', passport.authenticate('local',{
+//     failureMessage: true,
+//     failureRedirect: '/',
+//     successRedirect: '/main'}),
 
-//Registering local strategy for clients
+//     (req, res)=>{
+//         console.log(req.failureMessage)
+//     }
+// );
+app.post('/login', (req, res)=>{
+    passport.authenticate('local', function(err, user, info){
+        if(err){
+            console.log(err);
+            return res.status(500).send("Internal server error")
+        }
+        if(!user){
+            console.log(`Authentication Failed: ${info.message}`);
+            return res.status(500).render("login.ejs");
+        }else{
+            req.login(user, (err)=>{
+                if(err){
+                    console.log(err)
+                   
+                }else{
+                    res.redirect('/');
+                }
+            });
+        }
+    })(req, res);
+});
+
+app.post('/logout', (req, res)=>{
+    req.logout(err=>{
+        if (err){
+            console.log(err)
+        }
+        res.redirect('/')
+    });
+})
+
+//Registering local strategy 
 passport.use('local', new Strategy(async function verify(email, password, cb){
     console.log(email);
     console.log(password);
@@ -162,7 +197,9 @@ passport.use('local', new Strategy(async function verify(email, password, cb){
     }
 }));
 
-//Registering Google Strategyn for google users
+
+
+//Registering Google Strategy
 passport.use('google', new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENTID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -196,6 +233,7 @@ passport.deserializeUser(function(user,cb){
 app.all("*", (req, res)=>{
     res.render("404.ejs");
 });
+
 
 app.listen(port, ()=>{
     console.log(`App runnning on http://localhost:${port} `);

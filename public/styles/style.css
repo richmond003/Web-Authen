@@ -83,8 +83,9 @@ form{
     display: flex;
     flex-direction: column;
     width: 400px;
-    gap: 5px;
+    /* gap: 5px; */
     /* margin-top: 15px; */
+    margin: 0px;
 }
 input[type]{
     /* padding: 12px 5px; */
@@ -106,7 +107,8 @@ input[type]:focus{
     border: 3px solid red;
 }
 
-#noMatch{
+#no-match{
+    color: red;
     margin: 0px;
 }
 
