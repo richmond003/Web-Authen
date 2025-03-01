@@ -71,7 +71,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
+    color: white;
 }
 
 form{
@@ -100,7 +100,7 @@ input[type]{
     outline: none;
 }
 input[type]:focus{
-    border: 3px solid black;
+    border: 3px solid #e67e22;
 }
 
 .mixmatch-password[type]{
@@ -121,7 +121,7 @@ button{
     font-size: 15px;
     border: 0;
     font-weight: bold;
-    background-color: black;
+    background-color: #e67e22;
     color: white;
 }
 
@@ -154,7 +154,7 @@ hr{
 i{
     font-size: 25px;
     text-align: center;
-    color: black;
+    color: white;
 }
 
 a{
