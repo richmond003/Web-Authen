@@ -30,11 +30,12 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    //cookie: {secure: true}
+    cookie: {secure: true}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+//function to retrieve user from database
 async function getUser(email){
     email = email.trim();
     const query = `
@@ -44,6 +45,7 @@ async function getUser(email){
     return response.rows;
 }
 
+//function that adds user to the database
 async function addUser(email, password, fname, lname){
     email = email.trim();
     password = password.trim();
@@ -64,7 +66,7 @@ async function addUser(email, password, fname, lname){
 }
 
 
-// GET route
+// Main GET Route
 app.get('/', (req, res)=>{
     res.render('login.ejs');
 });
@@ -99,8 +101,7 @@ app.get('/auth/google/authen', passport.authenticate('google', {
     failureRedirect: '/register'
 }));
 
-
-//POST Methods 
+// sign up route configuration
 app.post('/sign_up', async (req, res)=>{
     const {fname, lname, email, password} = req.body;
     console.log(req.body)
@@ -130,15 +131,7 @@ app.post('/sign_up', async (req, res)=>{
     
 });
 
-// app.post('/login', passport.authenticate('local',{
-//     failureMessage: true,
-//     failureRedirect: '/',
-//     successRedirect: '/main'}),
-
-//     (req, res)=>{
-//         console.log(req.failureMessage)
-//     }
-// );
+// login route configuration
 app.post('/login', (req, res)=>{
     passport.authenticate('local', function(err, user, info){
         if(err){
@@ -161,6 +154,7 @@ app.post('/login', (req, res)=>{
     })(req, res);
 });
 
+// logout route configuration
 app.post('/logout', (req, res)=>{
     req.logout(err=>{
         if (err){
@@ -196,8 +190,6 @@ passport.use('local', new Strategy(async function verify(email, password, cb){
         console.error(err)
     }
 }));
-
-
 
 //Registering Google Strategy
 passport.use('google', new GoogleStrategy({
